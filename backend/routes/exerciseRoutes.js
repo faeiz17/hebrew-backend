@@ -1,11 +1,23 @@
 import express from "express";
-import { createExercise, getExercisesByLevel, getExercisesByStoryId } from "../controllers/exerciseController.js"; // Ensure .js extension
+import {
+  createExercise,
+  getAllExercises,
+  getExercisesByLevel,
+  getExercisesByStoryId,
+  getExerciseById,
+  updateExercise,
+  deleteExercise,
+} from "../controllers/exerciseController.js";
 
 const router = express.Router();
 
+// Routes
 router.post("/", createExercise);
-router.get("/:level", getExercisesByLevel);
+router.get("/", getAllExercises);
+router.get("/level/:level", getExercisesByLevel);
 router.get("/story/:storyId", getExercisesByStoryId);
+router.get("/:id", getExerciseById);
+router.put("/:id", updateExercise);
+router.delete("/:id", deleteExercise);
 
-// ✅ Use `export default` instead of `module.exports`
 export default router;
