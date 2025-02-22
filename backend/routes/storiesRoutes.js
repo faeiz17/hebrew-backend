@@ -1,10 +1,21 @@
 import express from "express";
-import { createStory, getStoriesByLevel } from "../controllers/storiesController.js"; // Ensure .js extension
+import {
+  createStory,
+  getAllStories,
+  getStoriesByLevel,
+  getStoryById,
+  updateStory,
+  deleteStory,
+} from "../controllers/storiesController.js";
 
 const router = express.Router();
 
+// Routes
 router.post("/", createStory);
-router.get("/:level", getStoriesByLevel);
+router.get("/", getAllStories);
+router.get("/level/:level", getStoriesByLevel);
+router.get("/:id", getStoryById);
+router.put("/:id", updateStory);
+router.delete("/:id", deleteStory);
 
-// ✅ Use `export default` instead of `module.exports`
 export default router;
