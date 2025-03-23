@@ -1,36 +1,31 @@
 import express from "express";
-import passport from "passport";
-import { registerUser, loginUser, getAllUsers } from "../controllers/userController.js";
-import { protect, role } from "../middlewares/authMiddleware.js";
-import { generateToken } from "../utils/generateToken.js"; // Ensure generateToken.js exists and uses export
+import {
+  registerUser,
+  loginUser,
+  getAllUsers,
+  getUserById,
+  updateUser,
+  deleteUser,
+  addCompletedStory,
+  updateXP,
+  updateHighestUnlockedLevel,
+} from "../controllers/userController.js";
 
 const router = express.Router();
 
-// Traditional auth routes
+// 1) Auth
 router.post("/register", registerUser);
 router.post("/login", loginUser);
-router.get("/", protect, role("admin"), getAllUsers);
 
-// Google OAuth routes
-router.get(
-  "/google",
-  passport.authenticate("google", { scope: ["profile", "email"] })
-);
+// 2) Basic CRUD
+router.get("/", getAllUsers); // GET /api/users
+router.get("/:id", getUserById); // GET /api/users/:id
+router.put("/:id", updateUser); // PUT /api/users/:id
+router.delete("/:id", deleteUser); // DELETE /api/users/:id
 
-router.get(
-  "/google/callback",
-  passport.authenticate("google", { failureRedirect: "/" }),
-  (req, res) => {
-    // Send JWT or redirect to the frontend with user details
-    res.json({
-      id: req.user.id,
-      name: req.user.name,
-      email: req.user.email,
-      role: req.user.role,
-      token: generateToken(req.user.id),
-    });
-  }
-);
+// 3) Progress & Tracking
+router.post("/:id/completedStory", addCompletedStory); // POST /api/users/:id/completedStory
+router.put("/:id/xp", updateXP); // PUT /api/users/:id/xp
+router.put("/:id/highestUnlockedLevel", updateHighestUnlockedLevel); // PUT /api/users/:id/highestUnlockedLevel
 
-// ✅ Use `export default` instead of `module.exports`
 export default router;
