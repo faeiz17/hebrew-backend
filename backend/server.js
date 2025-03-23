@@ -40,6 +40,8 @@ app.use("/api/users", userRoutes);
 app.use("/api/exercises", exerciseRoutes);
 app.use("/api/stories", storyRoutes);
 
+console.log("git changes");
+
 // Start the server
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
