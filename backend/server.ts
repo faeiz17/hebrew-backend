@@ -31,10 +31,15 @@ app.use(
     })
 );
 
+// Health Check
+app.get("/", (req, res) => {
+    res.json({ message: "Hebrew Learning Platform API is running! 🚀" });
+});
+
 // API Routes
 app.use("/api/users", userRoutes);
 app.use("/api/exercises", exerciseRoutes);
-app.use("/api/stories", storyRoutes);
+app.use("/api/story", storyRoutes);
 
 // Start the server
 const PORT = process.env.PORT || 5000;
