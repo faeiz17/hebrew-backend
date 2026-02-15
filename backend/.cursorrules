@@ -1,0 +1,23 @@
+# Hebrew Backend - AI Coding Rules (Node/TS/Express)
+
+Follow these rules for all backend modifications:
+
+## 1. Structure
+- **Services**: All Mongoose calls MUST go in `services/`.
+- **Controllers**: Keep them light. Handle req/res only.
+- **Routes**: Use consistent naming. Protect sensitive routes with `protect`.
+
+## 2. Security
+- Never expose `process.env` keys.
+- Always check roles using `role('admin')` for management tasks.
+- Return consistent error objects `{ message: "..." }`.
+
+## 3. TypeScript
+- Define Interfaces for all Mongoose Documents in `models/`.
+- Use `Request` and `Response` types from `express`.
+- NO `any`. Use `unknown` or specific interfaces.
+
+## 4. Maintenance
+- Use `npm run dev` for testing changes.
+- Ensure `seed` files are updated if models change.
+- Keep `vercel.json` updated for deployment.

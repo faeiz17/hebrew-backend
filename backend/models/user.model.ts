@@ -1,18 +1,40 @@
-// import mongoose from "mongoose";
+import mongoose, { Document, Model, Schema } from "mongoose";
 
-// const userSchema = new mongoose.Schema({
-//   name: { type: String, required: true },
-//   email: { type: String, required: true, unique: true },
-//   password: { type: String, required: true },
-//   role: { type: String, enum: ["admin", "teacher", "student"], required: true },
-// });
+export interface ICompletedStory {
+  storyId: mongoose.Types.ObjectId;
+  completedAt: Date;
+  quizScore: number;
+  attempts: number;
+}
 
-// // ✅ Use `export default` instead of `module.exports`
-// export default mongoose.model("User", userSchema);
+export interface IPreferences {
+  isDarkMode: boolean;
+  notifications: {
+    email: boolean;
+    push: boolean;
+  };
+}
 
-import mongoose from "mongoose";
+export interface IUser extends Document {
+  _id: mongoose.Types.ObjectId;
+  name: string;
+  email: string;
+  password?: string;
+  role: "admin" | "teacher" | "student";
+  avatarUrl: string;
+  bio: string;
+  xp: number;
+  highestUnlockedLevel: number;
+  completedStories: ICompletedStory[];
+  dailyStreak: number;
+  lastLogin: Date | null;
+  achievements: { type: string }[];
+  preferences: IPreferences;
+  createdAt: Date;
+  updatedAt: Date;
+}
 
-const userSchema = new mongoose.Schema(
+const userSchema = new Schema<IUser>(
   {
     // Basic Profile & Auth
     name: {
@@ -99,17 +121,11 @@ const userSchema = new mongoose.Schema(
       },
       // add more user-specific preferences here
     },
-
-    // If you want to implement email verification or password resets later:
-    // isEmailVerified: { type: Boolean, default: false },
-    // verifyToken: String,
-    // verifyTokenExpires: Date,
-    // resetPasswordToken: String,
-    // resetPasswordExpires: Date,
   },
   {
     timestamps: true, // automatically creates `createdAt` and `updatedAt`
   }
 );
 
-export default mongoose.model("User", userSchema);
+const User: Model<IUser> = mongoose.model<IUser>("User", userSchema);
+export default User;

@@ -4,7 +4,8 @@ import dotenv from "dotenv";
 dotenv.config(); // Loads .env (PORT, MONGO_URI, etc.)
 
 import mongoose from "mongoose";
-import Exercise from "./models/exerciseModel.js";
+import Exercise from "./models/exercise.model.js";
+import Story from "./models/story.model.js";
 // 2) The big array of exercises you want to insert:
 const exercisesData = [
   ////////////////////////////////////
@@ -2617,21 +2618,61 @@ const exercisesData = [
 async function seedExercises() {
   try {
     // 3) Connect to MongoDB using your MONGO_URI from .env
-    await mongoose.connect(process.env.MONGO_URI, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    });
+    await mongoose.connect(process.env.MONGO_URI!);
 
     console.log("Connected to MongoDB...");
 
     // OPTIONAL: Clear existing exercises if you want a clean slate
-    // await Exercise.deleteMany({});
+    await Exercise.deleteMany({});
 
-    // 4) Insert all exercises at once:
-    const result = await Exercise.insertMany(exercisesData);
+    // 4) Resolve Story IDs dynamically
+    const stories = await Story.find({});
+
+    // Map of old hardcoded IDs to their Story Titles (from seedStories.ts)
+    const oldIdToTitleMap: Record<string, string> = {
+      "6789e9055e1eeef5872858bb": "Daniel in Tel Aviv",
+      "679901a1a3b88ebf91b41063": "The Cat and the Milk",
+      "67a7864f0f3b9295244382fd": "Adam's Key",
+      "67a786910f3b929524438301": "The Traveler and Wisdom",
+      "67acbeba8aaaaed0d9af6e3f": "A Day at the Beach",
+      "67acbecc8aaaaed0d9af6e43": "The Library Visit",
+      "67acbf1f8aaaaed0d9af6e47": "The Climb to the Summit",
+      "67acbf4d8aaaaed0d9af6e4b": "Summer Ice Cream",
+      "67acbfa38aaaaed0d9af6e4f": "Class Reunion",
+      "67acbfb98aaaaed0d9af6e53": "River Bike Trip",
+      "67acbfee8aaaaed0d9af6e57": "Memories of Friends",
+      "67acc0268aaaaed0d9af6e5b": "Riding to the Waterfall",
+      "67acc0628aaaaed0d9af6e5f": "The Surprise Party",
+      "67acc0978aaaaed0d9af6e63": "Studies Abroad",
+      "67acc23a8aaaaed0d9af6e67": "Community Volunteering",
+      "67acc2558aaaaed0d9af6e6b": "Excavations in the South",
+      "67acc2bb8aaaaed0d9af6e6f": "Sustainable Agriculture",
+      "67acc3008aaaaed0d9af6e73": "Farming in the Arava",
+      "67acc3988aaaaed0d9af6e77": "Water Desalination in Israel",
+      "67acc4cf8aaaaed0d9af6e7b": "Urban Agriculture in Tel Aviv",
+      "67b9e563c6729c091d1962b2": "Hello from Daniel"
+    };
+
+    // Create a map of Title -> Real Mongo ID
+    const titleToRealIdMap: Record<string, string> = {};
+    stories.forEach((s: any) => {
+      titleToRealIdMap[s.titleEnglish] = s._id.toString();
+    });
+
+    // Replace the old hardcoded IDs in exercisesData with REAL ones
+    const finalizedExercises = exercisesData.map(ex => {
+      const title = oldIdToTitleMap[ex.storyId];
+      if (title && titleToRealIdMap[title]) {
+        return { ...ex, storyId: titleToRealIdMap[title] };
+      }
+      return ex;
+    });
+
+    // 5) Insert all exercises at once:
+    const result = await Exercise.insertMany(finalizedExercises);
     console.log(`${result.length} exercises inserted successfully!`);
   } catch (err) {
-    console.error("Error seeding exercises:", err);
+    console.error("Error seeding exercises:", (err as Error).message);
   } finally {
     // 5) Close the DB connection
     await mongoose.connection.close();
