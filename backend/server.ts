@@ -39,7 +39,7 @@ app.get("/", (req, res) => {
 // API Routes
 app.use("/api/users", userRoutes);
 app.use("/api/exercises", exerciseRoutes);
-app.use("/api/story", storyRoutes);
+app.use("/api/stories", storyRoutes);
 
 // Start the server
 const PORT = process.env.PORT || 5000;
